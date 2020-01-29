@@ -4,20 +4,39 @@ from urllib.parse import urlencode
 import requests
 
 from livecode.models import Character
+from livecode.schemas import CharacterSchema
 
 
 class CharacterRepository:
-    def __init__(self, url):
+    def __init__(self, url, database):
         self.url = url
+        self.database = database
+        self.collection = database.character
+        self.schema = CharacterSchema()
+
+    def find(self, filters=None):
+        documents = self.collection.find(filters)
+        characters = []
+        for document in documents:
+            characters.append(
+                Character(document["name"], document["gender"], document["id"])
+            )
+        return characters
 
     def create(self, character):
-        character_data = self.validate(character)
+        character_data = self.parse_character(character)
 
-        return Character(
+        character = Character(
             character_data["name"], character_data["gender"], character_data["id"]
         )
 
-    def validate(self, character):
+        character_document = self.schema.dump(character)
+
+        self.collection.insert_one(character_document)
+
+        return character
+
+    def parse_character(self, character):
         params = {"name": character.name, "gender": character.gender}
         params = urlencode(params)
 

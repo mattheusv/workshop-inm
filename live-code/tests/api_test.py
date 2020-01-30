@@ -12,7 +12,7 @@ def _parse_response_data(data):
     return json.loads(data.decode("utf-8").replace("''", '""'))
 
 
-class CharacterResourceTestCase(TestCase):
+class CharacterApiTestCase(TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()

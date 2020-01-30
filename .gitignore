@@ -1,3 +1,6 @@
 venv/
 __pycache__/
 *.pyc
+live-code/htmlcov/
+live-code/.coverage
+.vim/

@@ -1,24 +1,30 @@
+from os import getenv
+
+from dotenv import load_dotenv
 from flask import Flask
-from flask_restful import Api
 from pymongo import MongoClient
 
-from livecode.api import CharacterResource
+from livecode.api import CharacterApi
 from livecode.repository import CharacterRepository
 
 
-def create_app():
+def create_app(dotenv_path=None):
+    load_dotenv(dotenv_path)
+
     app = Flask(__name__)
-    api = Api(app)
 
-    mongo_client = MongoClient()
-    database = mongo_client["database"]
+    mongo_client = MongoClient(getenv("DATABASE_HOST", "mongodb://localhost:27017/"))
+    database = mongo_client[getenv("DATABASE", "character")]
 
-    character_repository = CharacterRepository("http://localhost:444", database)
+    character_repository = CharacterRepository(getenv("RICK_MORTY_API", ""), database)
+    character_api = CharacterApi(character_repository)
 
-    api.add_resource(
-        CharacterResource,
-        "/characters",
-        resource_class_kwargs={"character_repository": character_repository},
-    )
+    @app.route("/characters", methods=("GET",))
+    def get_characters():
+        return character_api.get()
+
+    @app.route("/characters", methods=("POST",))
+    def post_characters():
+        return character_api.post()
 
     return app

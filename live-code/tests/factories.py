@@ -11,7 +11,7 @@ _GENDERS = ("Male", "Female", "Unknown")
 
 
 class CharacterFactory(factory.Factory):
-    id_character = randint(0, 100)
+    id = randint(0, 100)
     name = _faker.name()
     gender = _GENDERS[randint(0, len(_GENDERS) - 1)]
 

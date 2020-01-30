@@ -52,9 +52,8 @@ class CharacterRepositoryTestCase(TestCase):
         self.db = client.test_workshop
 
         self.repository = CharacterRepository("http://localhost:444", self.db)
-        # self.repository = CharacterRepository("https://rickandmortyapi.com/api/")
 
-        self.character = CharacterFactory.create(id_character=0)
+        self.character = CharacterFactory.create(id=0)
         self.response_mock = {
             "results": [
                 {

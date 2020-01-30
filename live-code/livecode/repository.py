@@ -4,7 +4,6 @@ from urllib.parse import urlencode
 import requests
 
 from livecode.models import Character
-from livecode.schemas import CharacterSchema
 
 
 class CharacterRepository:
@@ -12,7 +11,6 @@ class CharacterRepository:
         self.url = url
         self.database = database
         self.collection = database.character
-        self.schema = CharacterSchema()
 
     def find(self, filters=None):
         documents = self.collection.find(filters)
@@ -26,11 +24,13 @@ class CharacterRepository:
     def create(self, character):
         character_data = self.parse_character(character)
 
-        character = Character(
-            character_data["name"], character_data["gender"], character_data["id"]
-        )
+        character = Character(**character_data)
 
-        character_document = self.schema.dump(character)
+        character_document = {
+            "id": character.id,
+            "name": character.name,
+            "gender": character.gender,
+        }
 
         self.collection.insert_one(character_document)
 
